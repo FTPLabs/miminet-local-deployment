@@ -1,0 +1,145 @@
+.ws-menu-devices-name {
+    display: none;
+}
+
+.ws-menu-devices {
+    display: none;
+}
+
+.ws-menu-settings-name {
+    display: none;
+}
+
+.ws-menu-settings {
+    display: none;
+}
+
+.ws-ask-link {
+    text-decoration: none;
+    color: #222;
+    padding: 17px;
+    font-weight: 500;
+    transition: 0.5s ease;
+}
+
+.ws-ask-link:hover {
+    color: black;
+}
+
+.ws-ask-button {
+    padding: 10px;
+    width: 180px;
+    background-color: white;
+    border-radius: 7px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+.ws-name-case {
+    display: none;
+}
+
+.ws-shadow {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 600px) {
+
+    .ws-menu-devices-name {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px;
+        width: 170px;
+        background-color: white;
+        border-radius: 7px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        font-weight: 500;
+        color: #222;
+    }
+    
+    .ws-menu-devices {
+        display: block;
+        max-height: calc(80vh - 140px);
+        padding: 10px;
+        width: 170px;
+        background-color: white;
+        border-radius: 7px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        color: #222;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+    
+    .ws-menu-settings-name {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px;
+        width: 270px;
+        background-color: white;
+        border-radius: 7px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        font-weight: 500;
+        color: #222;
+    }
+    
+    .ws-menu-settings {
+        display: block;
+        max-height: calc(75vh - 160px);
+        padding: 10px;
+        width: 270px;
+        background-color: white;
+        border-radius: 7px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        color: #222;
+    }
+    
+    .ws-name-case {
+        display: block;
+        padding: 10px;
+        padding-left: 25px;
+        padding-right: 25px;
+        background-color: white;
+        border-radius: 7px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+        color: #222;
+    }
+
+    .side-menu-header {
+        position: relative;
+        text-align: center;
+        padding: 6px 28px;
+    }
+
+    .side-menu-header span {
+        font-size: inherit;
+        user-select: none;
+    }
+
+    .side-menu-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #6c757d;
+        opacity: 0.6;
+    }
+
+    .side-menu-arrow.left {
+        left: 6px;
+    }
+
+    .side-menu-arrow.right {
+        right: 6px;
+    }
+
+    .side-menu-arrow:hover {
+        color: #000;
+        opacity: 1;
+    }
+}

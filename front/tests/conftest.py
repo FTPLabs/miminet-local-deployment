@@ -1,0 +1,456 @@
+import os
+import sys
+import time
+from contextlib import contextmanager
+from typing import Generator
+from unittest.mock import MagicMock
+
+import pytest
+import requests
+from requests import Session
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.command import Command
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select, WebDriverWait
+
+
+class testing_setting:
+    """Configuration settings for testing environment."""
+
+    nginx_docker_ip = os.getenv("TEST_TARGET_HOST", "127.0.0.1")
+    port = int(os.getenv("TEST_TARGET_PORT", 80))
+    selenium_hub_url = os.getenv("SELENIUM_HUB_URL", "http://localhost:4444/wd/hub")
+    window_size = "1920,1080"
+    auth_data = {
+        "email": "developer@miminet.local",
+        "password": "password",
+    }  # this data should be inserted into the database, selenium uses it for authentication
+
+
+def _main_url():
+    host = testing_setting.nginx_docker_ip
+    port = testing_setting.port
+    if port == 80:
+        return f"http://{host}"
+    return f"http://{host}:{port}"
+
+
+MAIN_PAGE = _main_url()
+HOME_PAGE = f"{MAIN_PAGE}/home"
+LOGIN_PAGE = f"{MAIN_PAGE}//auth/login.html"
+
+
+class MiminetTester(WebDriver):
+    """
+    Extends standard selenium class,
+    adding new methods for convenient element interaction.
+    """
+
+    def wait_and_click(
+        self,
+        by: str,
+        element: str,
+        timeout=20,
+        scope=None,
+    ):
+        """
+        Waits for the specified element to become clickable before clicking it.
+
+        Re-finds the element on every attempt so a stale element caused by a
+        page re-render is not treated as a failure.
+
+        If ``scope`` is given (a WebElement or a ``(by, selector)`` locator
+        tuple), the target element is searched within it on every attempt.
+        This keeps the click bound to e.g. the correct modal dialog when the
+        same inner id exists in several rendered dialogs.
+
+        Args:
+            by (By): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            timeout (int): The maximum time in seconds to wait (default: 20).
+            scope (WebElement | tuple): Optional container to re-find the element within.
+        """
+        deadline = time.monotonic() + timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutException(
+                    f"Element {element} is not clickable within {timeout} seconds."
+                )
+            try:
+                if scope is None:
+                    wait_target = EC.element_to_be_clickable((by, element))
+                else:
+                    container = (
+                        self.find_element(*scope) if isinstance(scope, tuple) else scope
+                    )
+                    wait_target = self.__scoped_element_clickable(
+                        container, by, element
+                    )
+                WebDriverWait(self, remaining).until(wait_target).click()
+                return
+            except StaleElementReferenceException:
+                continue
+
+    @staticmethod
+    def __scoped_element_clickable(container, by: str, element: str):
+        """Return the element when it is visible and enabled inside the container."""
+
+        def _condition(_driver):
+            try:
+                el = container.find_element(by, element)
+            except NoSuchElementException:
+                return None
+            return el if el.is_displayed() and el.is_enabled() else None
+
+        return _condition
+
+    def drag_and_drop(self, source, target, x: int, y: int):
+        """Performs a drag-and-drop action from a source element to a target element.
+
+        Elements may be given either as WebElement instances or as (by, selector)
+        locator tuples; locators are re-resolved on each attempt so a stale
+        element during the action is not treated as a failure.
+
+        Args:
+            source (WebElement | tuple): The source element to be dragged.
+            target (WebElement | tuple): The target element to drop the source element onto.
+            x (int): The x-offset to move to.
+            y (int): The y-offset to move to.
+        """
+        deadline = time.monotonic() + 20
+
+        def _resolve(element):
+            if isinstance(element, tuple):
+                by, selector = element
+                return self.find_element(by, selector)
+            return element
+
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutException(
+                    "Drag-and-drop did not complete within 20 seconds."
+                )
+            try:
+                actions_chain = ActionChains(self)
+
+                actions_chain.click_and_hold(_resolve(source))
+                actions_chain.move_to_element_with_offset(_resolve(target), x, y)
+                actions_chain.release()
+                actions_chain.perform()
+                return
+            except StaleElementReferenceException:
+                continue
+
+    def exist_element(self, by: str, element: str):
+        """
+        Check if an element exists on the page.
+
+        Args:
+            by (str): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+        """
+
+        return len(self.find_elements(by, element)) > 0
+
+    def wait_until_appear(self, by: str, element: str, timeout=20):
+        """
+        Waits until the specified element is present in the page's DOM and becomes visible.
+
+        Args:
+            by (str): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            timeout (int): The maximum time in seconds to wait (default: 20).
+        """
+        WebDriverWait(self, timeout).until(
+            EC.visibility_of_element_located((by, element))
+        )
+
+    def wait_until_disappear(self, by: str, element: str, timeout=20):
+        """
+        Waits until the specified element disappears from the page's DOM and becomes invisible.
+
+        Args:
+            by (str): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            timeout (int): The maximum time in seconds to wait (default: 20).
+        """
+        WebDriverWait(self, timeout).until(
+            EC.invisibility_of_element_located((by, element))
+        )
+
+    def wait_until_text(self, by: str, element: str, text: str, timeout=20):
+        """
+        Waits until text appears in the element.
+
+        Args:
+            by (By): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            timeout (int): The maximum time in seconds to wait (default: 20).
+        """
+        WebDriverWait(self, timeout).until(
+            EC.text_to_be_present_in_element((by, element), text)
+        )
+
+    def wait_until_value(self, by: str, element: str, value: str, timeout=20):
+        """
+        Waits until an input field holds the given value.
+
+        Re-finds the element on each attempt so a stale element caused by a page
+        re-render is not treated as a failure.
+
+        Args:
+            by (By): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            value (str): The value the input field must hold.
+            timeout (int): The maximum time in seconds to wait (default: 20).
+        """
+        WebDriverWait(self, timeout).until(
+            lambda driver: self.__has_value(driver, by, element, value)
+        )
+
+    @staticmethod
+    def __has_value(driver: WebDriver, by: str, element: str, value: str):
+        try:
+            return driver.find_element(by, element).get_attribute("value") == value
+        except StaleElementReferenceException:
+            return False
+
+    def wait_for(self, condition, timeout=20):
+        """Waits for a given condition to be true.
+
+        Args:
+            condition: A function that returns True when the condition is met. This function have WebDriver instance as its only argument.
+            timeout (int): The maximum time in seconds to wait (default: 20).
+        """
+        WebDriverWait(self, timeout=timeout).until(condition)
+
+    @contextmanager
+    def run_in_modal_context(
+        self, by: str, element: str
+    ) -> Generator[WebElement, None, None]:
+        """
+        Allow to do actions in the context of modal window.
+        """
+        try:
+            self.wait_until_appear(by, element, timeout=5)
+
+            yield self.find_element(by, element)
+        except TimeoutException:
+            raise Exception(f"Modal dialog {element} wasn't opened.")
+        finally:
+            # EC.invisibility_of_element_located treats a stale element (e.g. while
+            # the modal-close animation removes the dialog) as already invisible,
+            # so the close is awaited without racing the DOM removal.
+            self.wait_until_disappear(by, element, timeout=5)
+
+    def select_by_value(self, by: str, element: str, value: str):
+        """Selects an option in a select element by its value.
+
+        Re-finds the select element on each attempt so a stale element caused by
+        a page re-render is not treated as a failure.
+
+        Args:
+            by (By): The locator strategy (e.g., By.ID, By.XPATH).
+            element (str): The element locator (e.g., "myElementId", "//button[text()='Click Me']").
+            value: The value attribute of the option to select.
+        """
+        deadline = time.monotonic() + 20
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutException(
+                    f"Unable to select value {value} in {element} within 20 seconds."
+                )
+            try:
+                select = Select(self.find_element(by, element))
+                select.select_by_value(value)
+                return
+            except StaleElementReferenceException:
+                continue
+
+    def get_logs(self, logs_filter=None):
+        """
+        Retrieve browser logs with an optional filter.
+
+        Args:
+            logs_filter (function, optional): A function that takes a log entry as input
+                                            and returns True if the entry should be included.
+                                            Defaults to None, meaning all logs are returned.
+        Returns:
+            list: list with the filtered log entries.
+        """
+        # Remote WebDriver has no `get_log` in Selenium 4 (it lives only on
+        # ChromiumDriver); the grid session is a chromedriver underneath, so run
+        # the same GET_LOG command ChromiumDriver.get_log would run.
+        logs = self.execute(Command.GET_LOG, {"type": "browser"})["value"]
+        return list(filter(logs_filter, logs)) if logs_filter else list(logs)
+
+    def get_console_messages(self):
+        """
+        Retrieve browser console logs (console.log()). This can be used in debug purposes.
+        Returns:
+            iterator: list with the log messages.
+        """
+        return map(
+            lambda log: log["message"],
+            self.get_logs(
+                lambda log: log["source"] == "console-api" and log["level"] == "INFO"
+            ),
+        )
+
+
+@pytest.fixture(scope="session")
+def chrome_driver():
+    """Headless WebBrowser instance for testing (authorization here is not passed)."""
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--window-size=%s" % testing_setting.window_size)
+    chrome_options.add_argument("--no-sandbox")
+
+    chrome_options.set_capability(
+        "goog:loggingPrefs", {"browser": "ALL"}
+    )  # Capture console logs
+
+    tester = MiminetTester(testing_setting.selenium_hub_url, options=chrome_options)
+
+    yield tester
+
+    tester.close()
+    tester.quit()
+
+
+@pytest.fixture(scope="session")
+def requester():
+    """Request session, used to send requests (GET, POST, etc...) and process their results.
+
+    **[!]** Selenium is much slower than Requester! If you can test something by just making a request, without using Selenium, do it.
+    """
+
+    # Send a POST request to the http://XXXX.YY/auth/login.html
+    # perform authorization with this and save cookies in session
+    # use these cookies for other requests!
+
+    session = requests.Session()
+
+    response = session.get(MAIN_PAGE)
+
+    assert response.status_code == 200, (
+        "Miminet is not running or its address is incorrect: unable to get home page!"
+    )
+
+    response = session.post(
+        f"{MAIN_PAGE}//auth/login.html",
+        data=testing_setting.auth_data,
+    )
+
+    assert response.status_code == 200, "Unable to send authorization request!"
+    assert response.url != LOGIN_PAGE, "Failed to login using the specified data"
+
+    yield session
+
+    session.close()
+
+
+@pytest.fixture(scope="session")
+def selenium(chrome_driver: MiminetTester, requester: Session):
+    chrome_driver.get(MAIN_PAGE)
+    cookies = requester.cookies
+    print(cookies)
+    jwt_cookie_names = ["access_token_cookie", "refresh_token_cookie"]
+
+    # gift cookies to selenium
+    for cookie in cookies:
+        if cookie.name and cookie.value and cookie.expires:
+            selenium_cookie = {
+                "domain": testing_setting.nginx_docker_ip,
+                "expiry": cookie.expires,
+                "httpOnly": False,
+                "name": cookie.name,
+                "path": "/",
+                "sameSite": "Lax",
+                "secure": False,
+                "value": cookie.value,
+            }
+            chrome_driver.add_cookie(selenium_cookie)
+        elif cookie.name and cookie.value and cookie.name in jwt_cookie_names:
+            selenium_cookie = {
+                "domain": testing_setting.nginx_docker_ip,
+                "httpOnly": False,
+                "name": cookie.name,
+                "path": "/",
+                "sameSite": "Lax",
+                "secure": False,
+                "value": cookie.value,
+            }
+            chrome_driver.add_cookie(selenium_cookie)
+
+    # return configured chrome driver
+    return chrome_driver
+
+
+# --- Unit Test Fixtures ---
+
+# Add src to path so tests can import app and miminet_model
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
+
+@pytest.fixture
+def mock_env_dev(monkeypatch):
+    """Sets environment variables for DEV mode."""
+    monkeypatch.setenv("MODE", "dev")
+    monkeypatch.setenv("POSTGRES_HOST", "localhost")
+    monkeypatch.setenv("POSTGRES_DEFAULT_USER", "user")
+    monkeypatch.setenv("POSTGRES_DEFAULT_PASSWORD", "pass")
+    monkeypatch.setenv("POSTGRES_DATABASE_NAME", "miminet_dev")
+    monkeypatch.delenv("YANDEX_POSTGRES_HOST", raising=False)
+
+
+@pytest.fixture
+def mock_env_prod(monkeypatch):
+    """Sets environment variables for PROD mode."""
+    monkeypatch.setenv("MODE", "prod")
+    monkeypatch.setenv("YANDEX_POSTGRES_HOST", "rc1a-test.mdb.yandexcloud.net")
+    monkeypatch.setenv("YANDEX_POSTGRES_PORT", "6432")
+    monkeypatch.setenv("YANDEX_POSTGRES_USER", "prod_user")
+    monkeypatch.setenv("YANDEX_POSTGRES_PASSWORD", "prod_pass")
+    monkeypatch.setenv("YANDEX_POSTGRES_DB", "miminet_prod")
+    monkeypatch.setenv("YANDEX_POSTGRES_SSLMODE", "verify-full")
+    monkeypatch.setenv("YANDEX_POSTGRES_SSLROOTCERT", "/tmp/root.crt")
+
+
+@pytest.fixture
+def mock_psycopg2(mocker):
+    """Mocks psycopg2 to capture connection attempts."""
+    mock_connect = mocker.patch("miminet_model.psycopg2.connect")
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+
+    mock_connect.return_value.__enter__.return_value = mock_conn
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    return mock_connect, mock_cursor
+
+
+@pytest.fixture
+def mock_sqlalchemy_inspect(mocker):
+    """Mocks sqlalchemy.inspect."""
+    mock_inspect = mocker.patch("miminet_model.inspect")
+    mock_inspector = MagicMock()
+    mock_inspect.return_value = mock_inspector
+    return mock_inspector
+
+
+@pytest.fixture
+def mock_db(mocker):
+    """Mocks the entire db object to prevent context errors with db.engine."""
+    return mocker.patch("miminet_model.db")

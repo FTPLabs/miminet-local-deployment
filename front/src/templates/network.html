@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}{{ network.title }}{% endblock %}
+{% block description %}Эмуляция компьютерной сети в вебе{% endblock %}
+{% block og %}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Miminet">
+    <meta property="og:title" content="{{ network.title }}">
+    <meta property="og:description" content="Эмуляция компьютерной сети в вебе">
+    <meta property="og:url" content="https://miminet.ru{{ url_for(request.endpoint, guid=network.guid) }}">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:image" content="https://miminet.ru/images/preview/{{ network.preview_uri }}">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/workspace.css')}}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <section>
+        <div class="col bg-light">
+            <div id="network_scheme" class="position-absolute border bg-white border-primary vh-100 vw-100"></div>
+        </div>
+        <div>
+        <nav class="navbar">
+            {% if current_user.is_authenticated %}
+                <a href="/">
+                    <img src="{{ url_for('static', filename='/images/logo.png') }}" class="position-absolute start-0 top-0" width="170" style="margin: 17px; z-index: 10;" alt="Miminet">
+                </a>
+                <div class="ws-name-case position-absolute top-0 start-50 translate-middle-x" style="margin-top: 17px; z-index: 10;">
+                     {% if request.path != url_for('web_network_shared') %}
+                        <a class="d-inline nav-link" href="{{ url_for('home') }}">Мои сети</a>
+                        <a class="d-inline nav-link" href="#"> / </a>
+                     {% endif %}
+                        <a class="d-inline nav-link" id="network_title_head" href="{{ url_for('web_network', guid=network.guid) }}">{{ network.title }}</a>
+                </div>
+                <div class="d-flex position-absolute end-0 top-0" style="margin: 17px; z-index: 10;">
+                     <a class="ws-settings-button"
+                        href="#netConfigModal"
+                        data-bs-toggle="modal"
+                        data-target="#netConfigModal"
+                        data-toggle="tooltip"
+                        data-bs-placement="bottom" title="Настройки сети">
+                     </a>
+                     <a class="ws-copy-button"
+                        data-target="#ModalCopy"
+                        data-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        title="Сохранить копию"
+                        onclick="CopyNetwork()"
+                        style="margin-left: 16px; cursor: pointer;">
+                     </a>
+                     <a class="ws-share-button"
+                        data-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        title="Сеть доступна по URL"
+                        onclick="urlCopyButton()"
+                        style="margin-left: 16px; cursor: pointer;">
+                     </a>
+                </div>
+                 <div class="form-check pe-lg-1 position-absolute end-0 top-0" style="margin: 17px; z-index: 10;">
+                    <a class="btn btn-success btn-icon me-4" data-toggle="tooltip" data-bs-placement="bottom" id="share-network" title="Сеть доступна по URL" onclick="urlCopyButton()">
+                        <i class='bx bx-share-alt fs-4 mx-1' ></i>
+                    </a>
+                    <a class="btn btn-outline-primary btn-icon me-4" data-target="#ModalCopy" id="copy-network" data-toggle="tooltip" data-bs-placement="bottom" title="Сохранить копию" onclick="CopyNetwork()">
+                        <i class='bx bx-copy fs-4 mx-1'></i>
+                    </a>
+                    <a class="btn btn-outline-primary btn-icon" href="#netConfigModal" id="net-settings" data-bs-toggle="modal" data-target="#netConfigModal" data-toggle="tooltip" data-bs-placement="bottom" title="Настройки сети"><i class='bx bx-cog fs-4 mx-1'></i></a>
+                </div>
+            {% else %}
+                 <a href="/">
+                    <img src="{{ url_for('static', filename='/images/logo.png') }}" class="position-absolute start-0 top-0" width="170" style="margin: 17px; z-index: 10;" alt="Miminet">
+                </a>
+                <div class="ws-name-case position-absolute top-0 start-50 translate-middle-x" style="margin-top: 17px; z-index: 10;">
+                     <a class="nav-link" id="network_title_head" href="#">
+                        {{ network.title }}
+                     </a>
+                </div>
+                <a href="{{ url_for('login_index') }}" class="position-absolute end-0 top-0 btn btn-outline-primary ws-shadow" style="margin: 17px; z-index: 10;">
+                    <i class="bx fs-5 lh-1 me-1"></i>Вход
+                </a>
+            {% endif %}
+        </nav>
+
+        <div id="side_menu" class="position-absolute start-0 top-0" style="margin-left: 17px; margin-top: 100px;">
+            <div class="ws-menu-devices-name side-menu-header">
+                <i class='bx bx-chevron-left side-menu-arrow left' onclick="ToggleSideMenu()"></i>
+                <span id="side_menu_title">Устройства</span>
+                <i class='bx bx-chevron-right side-menu-arrow right' onclick="ToggleSideMenu()"></i>
+            </div>
+
+            <div class="ws-menu-devices" id="panel_devices">
+                <div id="l2_switch_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="l2_switch"
+                         src="{{ url_for('static', filename='/images/l2_switch.png') }}"/>
+                    <div class="icon-text">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Свитч (коммутатор) работает на втором уровне модели OSI.">Свитч (L2)</span>
+                    </div>
+                </div>
+                <div id="host_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="host" src="{{ url_for('static', filename='/images/host.png') }}"/>
+                    <div class="icon-text pt-2">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Хост - конечное сетевое устройство.">Хост</span>
+                    </div>
+                </div>
+                <div id="hacker_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="hacker" src="{{ url_for('static', filename='/images/hacker.png') }}"/>
+                    <div class="icon-text pt-2">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Хакер - специальный тип хоста для сценариев эмуляции.">Хакер</span>
+                    </div>
+                </div>
+                <div id="l1_hub_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="l1_hub" src="{{ url_for('static', filename='/images/hub.png') }}"/>
+                    <div class="icon-text">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Хаб (концентратор) &mdash; простейшее сетевое устойство.">Хаб (L1)</span>
+                    </div>
+                </div>
+                <div id="l3_router_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="l3_router"
+                         src="{{ url_for('static', filename='/images/l3_router.png') }}"/>
+                    <div class="icon-text">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Маршрутизатор (роутер, раутер) &mdash; работает на 3-м уровне модели OSI, позволяет объединять различные сети.">Роутер (L3)</span>
+                    </div>
+                </div>
+                <div id="server_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="server" src="{{ url_for('static', filename='/images/server.png') }}"/>
+                    <div class="icon-text">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Сервер &mdash; обслуживает клиентские запросы.">Сервер</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ws-menu-devices" id="panel_tools" style="display: none;">
+                <div id="textbox_device" style="margin-top: 6px; margin-bottom: 6px;">
+                    <img class="drag" id="textbox" src="{{ url_for('static', filename='/images/textbox.svg') }}"/>
+                    <div class="icon-text pt-2">
+                        <span data-bs-toggle="popover" data-bs-trigger="hover"
+                              data-bs-content="Текстбокс">Текстбокс</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="position-absolute end-0 top-0" style="margin-right: 17px; margin-top: 100px; pointer-events: none; z-index: 10;">
+            <div class="ws-menu-settings-name" style="pointer-events: all;">Настройки</div>
+            <div id="config_content" class="ws-menu-settings overflow-auto" style="pointer-events: all;">
+                <span>Тут будут настройки устройств. Выделите любое на схеме.</span>
+            </div>
+            <div id="config_content_save" class="ws-menu-settings overflow-auto" style="margin-top: 8px; pointer-events: all; display: none;">
+            </div>
+        </div>
+
+        <div class="position-absolute start-0 bottom-0" style="margin: 17px; font-weight: 500; z-index: 10;">
+            <div class="d-flex justify-content-center ws-shadow" id="NetworkPlayer">
+                <button type="button" class="btn btn-primary w-100" id="NetworkRunButton" disabled>Проверка эмуляции</button>
+            </div>
+            <div id="PacketSlider">
+                <div class="range-slider pt-3" data-start-min="0" data-min="0" data-max="100" data-step="1">
+                    <div class="range-slider-ui mt-0 mb-2" id="PacketSliderInput"></div>
+                    <input class="form-control range-slider-value-min" type="hidden">
+                </div>
+            </div>
+            <small id="NetworkPlayerLabel" class="d-flex justify-content-center text-muted text-center">Ожидание 10-30 сек.</small>
+        </div>
+
+        {% if network.description %}
+        <div class="ws-name-case position-absolute bottom-0 start-50 translate-middle-x" style="margin-bottom: 17px; z-index: 10;">
+            <div class="practice-question-text" style="max-height: 125px; overflow-y: auto; padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.9); max-width: 600px; text-align: center;">
+                <div class="text-black m-0" style="font-size: 16px;">{{ network.description }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+	<!--<div id="ImpulseDiv" class="position-fixed bottom-0 start-50 translate-middle-x alert alert-primary mx-auto text-center d-flex align-items-center mb-4 alert-dismissible fade show d-none" role="alert">
+		<span class="fs-4 pe-2">&#x1F468;&#x200D;&#x1F4BB;</span>
+		<a href="https://edu.yadro.com/impulse/?utm_source=telegram&utm_medium=messenger&utm_campaign=promo_impulse_2026&utm_content=miminet&utm_term=edhub" target="_blank" class="alert-link fw-semibold" onclick="if (typeof window.ym != 'undefined'){ym(92293993,'reachGoal','Impulse2026Network');}" >Оплачиваемая IT-стажировка в YADRO</a>
+		<button type="button" id="ImpulseCloseButton" class="btn-close py-0" data-bs-dismiss="alert" aria-label="Close" style="margin-top:26px;"></button>
+	</div>	-->
+
+        <a href="https://pubble.ru/p/miminet" target="_blank" class="btn btn-secondary position-absolute bottom-0 end-0" style="z-index: 10; margin:17px; margin-bottom:33px;">
+	<svg  xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+		fill="currentColor" viewBox="0 0 249 320" >
+		<!--Pubble https://pubble.ru/p/miminet-->
+		<path d="M134.771 0.00195312C197.594 0.203577 248.459 50.8575 248.459 113.314C248.459 175.522 198 226.019 135.523 226.621V226.623H135.213C134.94 226.625 134.668 226.628 134.395 226.628C134.121 226.628 133.848 226.625 133.575 226.623H73.252C73.1851 226.626 73.1122 226.63 73.0332 226.634C69.3678 226.795 67.1027 229.42 67.0098 232.657C67.0095 232.665 67.009 232.674 67.0088 232.682V286.486C67.0086 304.99 52.0077 319.99 33.5039 319.99C15.0003 319.99 0.000196291 304.99 0 286.486V33.5039C0.000193714 15.0003 15.0003 0.000227727 33.5039 0C33.6299 0 33.7562 0.00251799 33.8818 0.00390625V0H134.771V0.00195312ZM67.0088 226.742C67.0095 226.673 67.0098 226.635 67.0098 226.634C67.0098 226.634 67.3116 226.63 67.7881 226.623H67.0088V226.742ZM129.879 48.1953C119.248 48.1953 109.801 53.2614 103.817 61.1104C100.417 59.1192 96.4578 57.9766 92.2324 57.9766C79.5501 57.9767 69.2686 68.2578 69.2686 80.9404C69.2686 81.5265 69.2908 82.1076 69.334 82.6826C55.7998 86.7055 45.9287 99.2393 45.9287 114.08C45.9289 129.877 57.1122 143.06 71.9932 146.147C74.8099 149.769 75.8406 155.208 75.0742 161.365C74.2996 167.587 71.6969 174.477 67.3506 180.804L66.5635 181.95L67.9004 181.568C75.4404 179.414 81.154 177.31 86.4854 174.377C91.8171 171.444 96.7468 167.691 102.732 162.258L102.845 162.154C109.182 168.501 117.943 172.428 127.62 172.428C143.162 172.427 156.335 162.298 160.907 148.282C181.164 147.22 197.261 130.46 197.262 109.938C197.262 89.5425 181.36 72.8625 161.278 71.6162C157.26 58.0743 144.725 48.1956 129.879 48.1953Z"/>
+	</svg>&nbsp;&nbsp;Задать вопрос
+        </a>
+    </section>
+</main>
+
+    <div id="config_host"></div>
+    <div id="config_host_hacker"></div>
+    <div id="config_hub"></div>
+    <div id="config_switch"></div>
+    <div id="config_edge"></div>
+    <div id="config_router"></div>
+    <div id="config_server"></div>
+    <div id="config_vlan"></div>
+    <div id="config_vxlan"></div>
+    <div id="config_textbox"></div>
+{% endblock %}
+
+{% block network %}
+<script>
+
+    const network_guid = "{{ network.guid }}";
+    var network_title = "{{ network.title }}";
+    var network_description = {{ network.description | tojson }};
+    var network_zoom = {{ network_config.zoom}};
+    var network_pan_x = {{ network_config.pan_x}};
+    var network_pan_y = {{ network_config.pan_y}};
+
+    var nodes = {{ nodes | safe }};
+    var edges = {{ edges | safe }};
+    var jobs = {{ jobs | safe }};
+    var packets = {{ packets | safe }};
+    var pcaps = {{ pcaps | safe }};
+    var ns = null;
+
+    SetNetworkPlayerState({% if simulating %} {% if simulating.ready %} 0 {% else %} {{simulating.id}} {% endif%} {% else %} -1 {% endif%})
+    DrawGraph();
+
+    var close_impulse_btn = document.getElementById('ImpulseCloseButton');
+    var impulse_div = document.getElementById('ImpulseDiv');
+
+    if (impulse_div) {
+        var impulse_ts = localStorage.getItem('impulse_2026');
+
+        if (impulse_ts) {
+            const now = Date.now();
+	        const diff = now - Number(impulse_ts);
+	        const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+	        if (diff > threeDaysMs) {
+                impulse_div.classList.remove('d-none');
+            }
+	    } else {
+	        impulse_div.classList.remove('d-none');
+	    }
+    }
+
+    if (close_impulse_btn) {
+        close_impulse_btn.addEventListener("click", function() {
+	   
+	    if (typeof window.ym != 'undefined') {
+	        ym(92293993,'reachGoal','ImpulseClose');
+	    }
+
+	    localStorage.setItem('impulse_2026', Date.now().toString());
+	}, false);
+    }
+
+
+    function ToggleSideMenu() {
+        var devicesPanel = document.getElementById("panel_devices");
+        var toolsPanel = document.getElementById("panel_tools");
+        var menuTitle = document.getElementById("side_menu_title");
+
+        if (devicesPanel.style.display === "none") {
+            // Show Devices
+            devicesPanel.style.display = "block";
+            toolsPanel.style.display = "none";
+            menuTitle.innerText = "Устройства";
+        } else {
+            // Show Tools
+            devicesPanel.style.display = "none";
+            toolsPanel.style.display = "block";
+            menuTitle.innerText = "Инструменты";
+        }
+    }
+</script>
+
+{% endblock %}

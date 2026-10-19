@@ -1,0 +1,126 @@
+{
+    "nodes": [
+        {
+            "classes": [
+                "host"
+            ],
+            "config": {
+                "default_gw": "192.168.1.1",
+                "label": "host_1",
+                "type": "host"
+            },
+            "data": {
+                "id": "host_1",
+                "label": "host_1"
+            },
+            "interface": [
+                {
+                    "connect": "edge_m900dto20o98bj6vlkj",
+                    "id": "iface_67804225",
+                    "ip": "192.168.1.100",
+                    "name": "iface_67804225",
+                    "netmask": 24
+                }
+            ],
+            "position": {
+                "x": 110.44407989097698,
+                "y": 178.02631956390792
+            }
+        },
+        {
+            "classes": [
+                "host"
+            ],
+            "config": {
+                "default_gw": "172.168.1.1",
+                "label": "host_2",
+                "type": "host"
+            },
+            "data": {
+                "id": "host_2",
+                "label": "host_2"
+            },
+            "interface": [
+                {
+                    "connect": "edge_m900duxw191mskhmh59",
+                    "id": "iface_81460647",
+                    "ip": "172.168.1.100",
+                    "name": "iface_81460647",
+                    "netmask": 24
+                }
+            ],
+            "position": {
+                "x": 234.43165120802047,
+                "y": 176.0014621979949
+            }
+        },
+        {
+            "classes": [
+                "l3_router"
+            ],
+            "config": {
+                "default_gw": "",
+                "label": "router_1",
+                "type": "router"
+            },
+            "data": {
+                "id": "router_1",
+                "label": "router_1"
+            },
+            "interface": [
+                {
+                    "connect": "edge_m900dto20o98bj6vlkj",
+                    "id": "iface_43447824",
+                    "ip": "192.168.1.1",
+                    "name": "iface_43447824",
+                    "netmask": 24
+                },
+                {
+                    "connect": "edge_m900duxw191mskhmh59",
+                    "id": "iface_81071172",
+                    "ip": "172.168.1.1",
+                    "name": "iface_81071172",
+                    "netmask": 24
+                }
+            ],
+            "position": {
+                "x": 169.4375,
+                "y": 104.30000305175781
+            }
+        }
+    ],
+    "edges": [
+        {
+            "data": {
+                "id": "edge_m900dto20o98bj6vlkj",
+                "source": "host_1",
+                "target": "router_1",
+                "loss_percentage": 0
+            }
+        },
+        {
+            "data": {
+                "id": "edge_m900duxw191mskhmh59",
+                "source": "host_2",
+                "target": "router_1",
+                "loss_percentage": 0
+            }
+        }
+    ],
+    "jobs": [
+        {
+            "arg_1": "172.168.1.99",
+            "host_id": "host_1",
+            "id": "6ed9f85299e34bdfac743226617e9cc0",
+            "job_id": 1,
+            "level": 0,
+            "print_cmd": "ping -c 1 172.168.1.99"
+        }
+    ],
+    "config": {
+        "zoom": 2,
+        "pan_x": 0,
+        "pan_y": 0
+    },
+    "pcap": []
+}

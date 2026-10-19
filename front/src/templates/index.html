@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+{% block title %}Эмулятор компьютерной сети{% endblock %}
+{% block description %}Эмулятор компьютерной сети для образовательных целей на базе ОС Linux{% endblock %}
+{% block content %}
+
+<main>
+    <section class="py-5 position-relative overflow-hidden">
+       <div class="container my-lg-5">
+             <div class="row">
+                <div class="col-md-5">
+                    <div id="index_network_example" class="border border-light" style="height: 300px;cursor: pointer"></div>
+                </div>
+                <div class="col-md-7">
+                    <div class="d-flex align-items-center justify-content-center text-center" style="height: 300px;">
+                        <p class="fs-2">Эмулятор компьютерной сети для образовательных целей на базе ОС Linux
+                            <br>
+                            <a href="{{ url_for('home') }}" class="mt-5 btn btn-primary">Создать сеть</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!--<section class="pt-3 pb-5 position-relative">
+	    <div class="bg-gradient-primary position-absolute top-0 start-0 w-100 h-100 opacity-15 d-none d-lg-block z-1"></div>
+	    <div class="container pt-5 pb-4" style="position: relative; z-index: 2;">
+		    <div class="row row-cols-2 align-item-stretch">
+			    <div class="col">
+				    <p class="pb-lg-0 text-primary mb-1" style="max-width: 40.75rem;">6 июля &mdash; 15 сентября 2026 года</p>
+				    <h1 class="mb-1">IT-стажировка в YADRO</h1>
+				    <p class="pb-lg-0 fs-lg" style="max-width: 40.75rem;">Оплачиваемая, <span class="text-primary fw-semibold">в офисе / удаленно</span></p>
+
+				    <div class="row mt-4">
+					    <div class="col-4">
+						    <div class="card h-100 border-0 shadow-sm text-decoration-none">
+							    <div class="card-body p-3">
+								    <h2 class="h2 text-primary">30+</h2>
+								    <p class="text-body mb-0 fs-sm">направлений стажировки</p>
+							    </div>
+						    </div>
+					    </div>
+					    <div class="col-8">
+						    <div class="card h-100 border-0 shadow-sm text-decoration-none">
+							    <div class="card-body p-3">
+								    <h2 class="h2 text-primary">5 <span class="fs-lg fw-normal">городов</span></h2>
+								    <p class="fw-normal text-body mb-0 fs-sm">Москва, Санкт-Петербург, Нижний Новгород, Екатеринбург, Минск</p>
+							    </div>
+						    </div>
+					    </div>
+				    </div>
+
+				    <div class="row row-cols-1 mt-4">
+					    <div class="col">
+						    <a href="https://edu.yadro.com/impulse/?utm_source=telegram&utm_medium=messenger&utm_campaign=promo_impulse_2026&utm_content=miminet&utm_term=edhub" target="_blank" class="btn btn-primary mb-3 mb-sm-0 me-sm-3 w-100 fs-sm">Узнать больше</a>
+						    <p class="text-body mt-2 mx-auto text-center fs-sm">Заявки принимаются до 3 мая</p>
+					    </div>
+				    </div>
+			    </div>
+
+			    <div class="col">
+				    <img src="images/hero-img.dd9fa2a6.png" class="rounded-3 mx-auto d-block" style="width: 77%" alt="Image">
+			    </div>
+		    </div>
+	    </div>
+    </section>-->
+
+
+ <section class="pt-4 pt-lg-0 pb-4 pb-lg-5 bg-secondary">
+	 <div class="container pb-4 pt-5">
+		 <h2 class="h1 text-center text-md-start pb-3 pb-md-0 mb-md-5">Возможности</h2>
+		 <div class="row row-cols-1 row-cols-md-2">
+			 <div class="col py-4 my-2 my-sm-3">
+				 <div class="card h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+					 <div class="d-inline-block bg-info shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+						 <img src="/assets/icons/cms.svg" class="d-block m-1" width="40" alt="Icon">
+					</div>
+				 	<div class="card-body pt-3">
+						<h2 class="h4 d-inline-flex align-items-center">Вся работа в браузере</h2>
+						<p class="fs-sm text-body mb-0">Нет нужды устанавливать дополнительные программы. Создание и настройка сети выполняется прямо в браузере.</p>
+					</div>
+				 </div>
+			 </div>
+
+			 <div class="col py-4 my-2 my-sm-3">
+				 <div class="card h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+					 <div class="d-inline-block bg-info shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+						 <img src="/assets/icons/timer.svg" class="d-block m-1" width="40" alt="Icon">
+					</div>
+				 	<div class="card-body pt-3">
+						<h2 class="h4 d-inline-flex align-items-center">Точная эмуляция сети</h2>
+						<p class="fs-sm text-body mb-0">Для эмуляции сети используется сетевой стек ОС Linux. Весь процесс занимает всего 10-15 секунд, в зависимости от настроек сети.</p>
+					</div>
+				 </div>
+			 </div>
+
+			 <div class="col py-4 my-2 my-sm-3">
+				 <div class="card h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+					 <div class="d-inline-block bg-info shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+						 <img src="/assets/icons/analytics.svg" class="d-block m-1" width="40" alt="Icon">
+					</div>
+				 	<div class="card-body pt-3">
+						<h2 class="h4 d-inline-flex align-items-center">Анимация сети</h2>
+						<p class="fs-sm text-body mb-0">Детальная анимация помогает досконально изучать работу сети и конкретных протоколов. Анимацию можно проматывать до конкретного шага.</p>
+					</div>
+				 </div>
+			 </div>
+
+			 <div class="col py-4 my-2 my-sm-3">
+				 <div class="card h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+					 <div class="d-inline-block bg-info shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+						 <img src="/assets/icons/rocket.svg" class="d-block m-1" width="40" alt="Icon">
+					</div>
+				 	<div class="card-body pt-3">
+						<h2 class="h4 d-inline-flex align-items-center">Разнообразие сетевых настроек</h2>
+						<p class="fs-sm text-body mb-0">Можно запускать TCP/UDP сервер и клиент, детально изучать работу всего TCP/IP стека, устанавливать потери в канале. Есть поддержка NAT, VLAN, IPIP, GRE, VxLAN, STP/RSTP.</p>
+					</div>
+				 </div>
+			 </div>
+
+			 <div class="col py-4 my-2 my-sm-3">
+				 <div class="card h-100 border-0 shadow-sm text-decoration-none pt-5 px-sm-3 px-md-0 px-lg-3 pb-sm-3 pb-md-0 pb-lg-3 me-xl-2">
+					 <div class="d-inline-block bg-info shadow-primary rounded-3 position-absolute top-0 translate-middle-y p-3">
+						 <img src="/assets/icons/insurance.svg" class="d-block m-1" width="40" alt="Icon">
+					</div>
+				 	<div class="card-body pt-3">
+						<h2 class="h4 d-inline-flex align-items-center">Проверка знаний (тестирование)</h2>
+						<p class="fs-sm text-body mb-0">Автоматическое тестирование по теории и практике. Свяжитесь с нами для добавления своих вопросов и задач!</p>
+					</div>
+				 </div>
+			 </div>
+
+		 </div>		 
+	 </div>
+ </section>
+
+ <section class="pt-4 pt-lg-0 pb-lg-5 pb-4 pb-3">
+	 <div class="container pb-4 pt-5">
+		 <h2 class="h1 mb-lg-4 mb-3 text-center">Кто использует Miminet?</h2>
+		 <p class="mb-lg-5 mb-4 pb-lg-0 pb-md-2 mx-auto text-center" style="max-width: 40.75rem;">Miminet уже воспользовались 15 000+ обучающихся.</p>
+
+		 <div class="row justify-content-center organization-logos-row">
+			 <div class="col-lg-3 col-md-6 col-sm-6 text-center pb-md-2 mb-3 mb-lg-4 d-flex">
+				 <a href="https://spbu.ru/" target="_blank" rel="noopener noreferrer" class="organization-logo-card card-hover h-100 py-sm-4 py-3 px-3 mx-2 border-0 shadow-sm rounded-pill d-flex align-items-center justify-content-center w-100">
+					 <img src="/images/spbu_logo.png" class="organization-logo-image" alt="SPBU brand">
+				 </a>
+			 </div>
+
+			 <div class="col-lg-3 col-md-6 col-sm-6 text-center pb-md-2 mb-3 mb-lg-4 d-flex">
+				 <a href="https://itmo.ru/" target="_blank" rel="noopener noreferrer" class="organization-logo-card card-hover h-100 py-sm-4 py-3 px-3 mx-2 border-0 shadow-sm rounded-pill d-flex align-items-center justify-content-center w-100">
+					 <img src="/images/itmo_logo.png" class="organization-logo-image" alt="ITMO brand">
+				 </a>
+			 </div>
+
+			 <div class="col-lg-3 col-md-6 col-sm-6 text-center pb-md-2 mb-3 mb-lg-4 d-flex">
+				 <a href="https://tsu.ru/" target="_blank" rel="noopener noreferrer" class="organization-logo-card card-hover h-100 py-sm-4 py-3 px-3 mx-2 border-0 shadow-sm rounded-pill d-flex align-items-center justify-content-center w-100">
+					 <img src="/images/tsu_logo.png" class="organization-logo-image" alt="TSU brand">
+				 </a>
+			 </div>
+
+			 <div class="col-lg-3 col-md-6 col-sm-6 text-center pb-md-2 mb-3 mb-lg-4 d-flex">
+				 <div class="organization-logo-card card-hover h-100 py-sm-4 py-3 px-3 mx-2 border-0 shadow-sm rounded-pill d-flex align-items-center justify-content-center w-100">
+					 <img src="/images/baik_logo.svg" class="organization-logo-image organization-logo-image--baik" alt="БАИК им. М.Ф. Тимашовой">
+				 </div>
+			 </div>
+		 </div>
+	 </div>
+</section>
+
+ <section class="pt-4 pt-lg-0 bg-secondary">
+	 <div class="container pb-4 pt-5">
+
+		 <h2 class="h1 text-center pb-md-0">Примеры использования</h2>
+
+		 <div class="row gy-4 pb-xl-5 pb-md-4 pb-3">
+			 <div class="col-lg-5 col-md-6 order-md-1 order-2 d-flex">
+				 <div class="align-self-center pe-lg-0 pe-md-4">
+					 <h3 class="mb-md-4">На лекциях</h3>
+					 <p class="mb-md-4 mb-3 fs-lg">Интерактивный инструмент для лектора. Можно прямо в браузере рисовать схемы сетей и сразу анимировать их, демонстрируя работу различных протоколов и устройств.</p>
+					 <hr class="my-md-4 my-3">
+					 <ul class="list-unstyled d-flex flex-wrap mt-md-n3 mt-n2 ms-md-n4 ms-n3 mb-0 pb-lg-4 pb-md-2 fw-bold">
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">Хост</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">Коммутатор</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">Маршрутизатор</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">Сервер</li>
+					 </ul>
+				 </div>
+			 </div>
+
+			 <div class="col-md-6 offset-lg-1 order-md-2 order-1">
+
+				 <div class="bg-secondary rounded-3">
+					 <img src="/images/lecture.png" alt="Lecture image" class="d-block">
+				 </div>
+			 </div>
+		 </div>
+
+		 <div class="row gy-4 pb-xl-5 pb-md-4 pb-3">
+
+			 <div class="col-md-6 offset-lg-1 order-md-2 order-1">
+
+				 <div class="bg-secondary rounded-3">
+					 <img src="/images/practice.png" alt="Practice image" class="d-block">
+				 </div>
+			 </div>
+
+			 <div class="col-lg-5 col-md-6 order-md-1 order-2 d-flex">
+				 <div class="align-self-center pe-lg-0 pe-md-4">
+
+					 <h3 class="mb-md-4">На практиках</h3>
+					 <p class="mb-md-4 mb-3 fs-lg">Большой набор конфигурируемых параметров. Вы можете собирать простые и сложные конфигурации, эмулировать их и детально изучать работу отдельных протоколов: ARP, IP, TCP, ICMP, GRE и многих других.</p>
+					 <hr class="my-md-4 my-3">
+					 <ul class="list-unstyled d-flex flex-wrap mt-md-n3 mt-n2 ms-md-n4 ms-n3 mb-0 pb-lg-4 pb-md-2 fw-bold">
+
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">TCP/IP</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">VLAN</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">STP/RSTP</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">VPN (IPIP, GRE)</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">NAT</li>
+					 </ul>
+				 </div>
+			 </div>
+		 </div>
+
+		 <div class="row gy-4">
+			 <div class="col-lg-5 col-md-6 order-md-1 order-2 d-flex">
+				 <div class="align-self-center pe-lg-0 pe-md-4">
+					 <h3 class="mb-md-4">Проверка знаний</h3>
+					 <p class="mb-md-4 mb-3 fs-lg">Раздел "Тестирование" помогает проводить собеседования и проверку знаний у обучающихся. Можно создавать свои наборы тестов из теоретических вопросов и практических заданий с автоматической проверкой.</p>
+
+					 <hr class="my-md-4 my-3">
+					 <ul class="list-unstyled d-flex flex-wrap mt-md-n3 mt-n2 ms-md-n4 ms-n3 mb-0 pb-lg-4 pb-md-2 fw-bold">
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">100+ Вопросов в базе</li>
+						 <li class="mt-md-3 mt-2 ms-md-4 ms-3">10+ Практических задач</li>
+					 </ul>
+				 </div>
+			 </div>
+
+			 <div class="col-md-6 offset-lg-1 order-md-2 order-1">
+				 <div class="bg-secondary rounded-3">
+					 <img src="/images/test.png" alt="Test image" class="d-block">
+				 </div>
+			 </div>
+		 </div>
+	 </div>
+ </section>
+
+ <section class="container pt-4 pt-lg-0 pb-4 pb-lg-5">
+        <h2 class="h1 text-center py-5 pb-md-0">Как это работает?</h2>
+        <div class="steps">
+          <div class="step pt-0 pt-md-3 pb-3">
+            <div class="step-number">
+              <div class="step-number-inner">1</div>
+            </div>
+            <div class="step-body d-flex align-items-center ps-xl-5">
+              <div class="d-none d-lg-block flex-shrink-0 mx-4 mx-xl-5">
+                <img src="/images/howto/how_to_1.png" width="250" alt="Нарисуйте свою сеть">
+              </div>
+              <div class="ps-md-4 ps-xl-5">
+                <h3 class="h4">Нарисуйте свою сеть</h3>
+                <p class="mb-0">Вы можете создать компьютерную сеть, в которой будут хосты, свитчи, хабы, раутеры и сервера. Также можете задать настройки для каждого устройства.</p>
+              </div>
+            </div>
+          </div>
+          <div class="step pt-0 pt-md-4 pb-5">
+            <div class="step-number">
+              <div class="step-number-inner">2</div>
+            </div>
+            <div class="step-body d-flex align-items-center ps-xl-5">
+              <div class="d-none d-lg-block flex-shrink-0 mx-4 mx-xl-5">
+                <img src="/images/howto/how_to_2.png" width="250" alt="Отправте сеть на эмуляцию">
+              </div>
+              <div class="ps-md-4 ps-xl-5">
+                <h3 class="h4">Отправьте сеть на эмуляцию</h3>
+                <p class="mb-0">На нашем сервере ваша сеть будет эмулироваться с помощью сетевой подсистемы Linux. Для каждого устройства создается сетевой интерфейс со своим уникальным MAC адресом и другими настройками.</p>
+              </div>
+            </div>
+          </div>
+          <div class="step pt-0 pt-md-4 pb-5">
+            <div class="step-number">
+              <div class="step-number-inner">3</div>
+            </div>
+            <div class="step-body d-flex align-items-center ps-xl-5">
+              <div class="d-none d-lg-block flex-shrink-0 mx-4 mx-xl-5">
+                <img src="/images/howto/how_to_3.png" class="d-dark-mode-none" width="250" alt="Illustration">
+              </div>
+              <div class="ps-md-4 ps-xl-5">
+                <h3 class="h4">Дождитесь эмуляции на сервере</h3>
+                <p class="mb-0">Во время эмуляции сети идет захват всего сетевого трафика, который затем обрабатывается для визуализации.</p>
+              </div>
+            </div>
+          </div>
+          <div class="step pt-0 pt-md-4 pb-5">
+            <div class="step-number">
+              <div class="step-number-inner">4</div>
+            </div>
+            <div class="step-body d-flex align-items-center ps-xl-5">
+              <div class="d-none d-lg-block flex-shrink-0 mx-4 mx-xl-5">
+                <img src="/images/howto/how_to_4.png" class="d-dark-mode-none" width="250" alt="Illustration">
+              </div>
+              <div class="ps-md-4 ps-xl-5">
+                <h3 class="h4">Запустите анимацию</h3>
+                <p class="mb-0">Запустите анимацию и наблюдайте за сетевым трафиком в удобном формате.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  </section>
+
+
+    <!-- вторая страница, шаг-->
+    <!-- section class="py-5 my-lg-5">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 pb-xl-3" -->
+  <!-- Step -->
+                <!-- div class="col text-center border-end">
+                     <div class="card d-table border-0 rounded-circle shadow-sm p-3 mx-auto mb-4">
+                        <img class="host" src="{{ url_for('static', filename='/images/pc.png') }}" width="100">
+                    </div>
+                        <h5 class="mb-2">Шаг 1</h5>
+                        <p class="fs mb-0">Добавь устройства</p>
+                </div-->
+  <!-- Step -->
+                <!-- div class="col text-center border-end">
+                     <div class="card d-table border-0 rounded-circle shadow-sm p-3 mx-auto mb-4">
+                        <img class="line" src="{{ url_for('static', filename='/images/line.png') }}" width="90">
+                    </div>
+                        <h5 class="mb-2">Шаг 2</h5>
+                        <p class="fs mb-0">Соедини устройства</p>
+                </div -->
+  <!-- Step -->
+                <!-- div class="col text-center border-end">
+                     <div class="card d-table border-0 rounded-circle shadow-sm p-3 mx-auto mb-4">
+                        <img class="parameters"  src="{{ url_for('static', filename='/images/parameters.png') }}" width="100">
+                    </div>
+                        <h5 class="mb-2">Шаг 3</h5>
+                        <p class="fs mb-0">Настрой параметры</p>
+                </div-->
+  <!-- Step -->
+                 <!-- div class="col text-center">
+                     <div class="card d-table border-0 rounded-circle shadow-sm p-3 mx-auto mb-4">
+                        <img class="parameters" src="{{ url_for('static', filename='/images/topo.png') }}" width="150">
+                        </div>
+                        <h5 class="mb-2">Шаг 4</h5>
+                        <p class="fs mb-0">Запусти с помощью кнопки Эмулировать</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section-->
+
+  <section class="container pt-4 pt-lg-0 pb-4 pb-lg-5">
+        <h2 class="h1 text-center pb-3 pb-md-0 mb-md-5">Как это работает (видео)</h2>
+        <div class="col text-center">
+            <video class="border-primary" src="{{ url_for('static', filename='/video/video.mp4') }}" width="60%" controls></video>
+        </div>
+</section>
+
+<section class="container py-5 mt-md-n2">
+    <div class="card border-0 bg-gradient-primary">
+        <div class="py-md-5 py-4 text-center">
+            <div class="card-body" style="background-image: url(/images/contact-bg.png);">
+                <p class="lead text-light opacity-70 mb-3"><font style="vertical-align: inherit;">Остались вопросы?</font></p>
+                <h2 class="h1 text-light pb-3 pb-lg-0 mb-lg-5"><font style="vertical-align: inherit;">Можете связаться с нами</font></h2>
+
+                <!-- Pubble -->
+                <a href="https://pubble.ru/p/miminet" target="_blank" class="btn btn-primary btn-secondary btn-telegram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 249 320">
+                        <!--Pubble https://pubble.ru/p/miminet-->
+                        <path d="M134.771 0.00195312C197.594 0.203577 248.459 50.8575 248.459 113.314C248.459 175.522 198 226.019 135.523 226.621V226.623H135.213C134.94 226.625 134.668 226.628 134.395 226.628C134.121 226.628 133.848 226.625 133.575 226.623H73.252C73.1851 226.626 73.1122 226.63 73.0332 226.634C69.3678 226.795 67.1027 229.42 67.0098 232.657C67.0095 232.665 67.009 232.674 67.0088 232.682V286.486C67.0086 304.99 52.0077 319.99 33.5039 319.99C15.0003 319.99 0.000196291 304.99 0 286.486V33.5039C0.000193714 15.0003 15.0003 0.000227727 33.5039 0C33.6299 0 33.7562 0.00251799 33.8818 0.00390625V0H134.771V0.00195312ZM67.0088 226.742C67.0095 226.673 67.0098 226.635 67.0098 226.634C67.0098 226.634 67.3116 226.63 67.7881 226.623H67.0088V226.742ZM129.879 48.1953C119.248 48.1953 109.801 53.2614 103.817 61.1104C100.417 59.1192 96.4578 57.9766 92.2324 57.9766C79.5501 57.9767 69.2686 68.2578 69.2686 80.9404C69.2686 81.5265 69.2908 82.1076 69.334 82.6826C55.7998 86.7055 45.9287 99.2393 45.9287 114.08C45.9289 129.877 57.1122 143.06 71.9932 146.147C74.8099 149.769 75.8406 155.208 75.0742 161.365C74.2996 167.587 71.6969 174.477 67.3506 180.804L66.5635 181.95L67.9004 181.568C75.4404 179.414 81.154 177.31 86.4854 174.377C91.8171 171.444 96.7468 167.691 102.732 162.258L102.845 162.154C109.182 168.501 117.943 172.428 127.62 172.428C143.162 172.427 156.335 162.298 160.907 148.282C181.164 147.22 197.261 130.46 197.262 109.938C197.262 89.5425 181.36 72.8625 161.278 71.6162C157.26 58.0743 144.725 48.1956 129.879 48.1953Z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+    <div id="config_host"></div>
+
+{% endblock %}
+
+{% block network %}
+<script>
+
+    var graph_network_zoom = 2;
+    var graph_network_pan_x = -170;
+    var graph_network_pan_y = -90;
+
+    var nodes = JSON.parse('[{"classes": ["l2_switch"], "config": {"label": "l2sw1", "type": "l2_switch"}, "data": {"id": "l2sw1", "label": "l2sw1"}, "interface": [{"connect": "edge_lhaep1dk4d654tvxhl5", "id": "l2sw1_1", "name": "l2sw1_1"}, {"connect": "edge_lhaep2k8vhx64z7cubc", "id": "l2sw1_2", "name": "l2sw1_2"}], "position": {"x": 220.05523484856238, "y": 85.46609972096313}}, {"classes": ["host"], "config": {"default_gw": "", "label": "host_1", "type": "host"}, "data": {"id": "host_1", "label": "host_1"}, "interface": [{"connect": "edge_lhaep1dk4d654tvxhl5", "id": "iface_6634026", "ip": "10.0.0.1", "name": "iface_6634026", "netmask": 24}], "position": {"x": 154.85945194154408, "y": 160.38941060646175}}, {"classes": ["host"], "config": {"default_gw": "", "label": "host_3", "type": "host"}, "data": {"id": "host_3", "label": "host_3"}, "interface": [{"connect": "edge_lhaep2k8vhx64z7cubc", "id": "iface_7628183", "ip": "10.0.0.2", "name": "iface_7628183", "netmask": 24}], "position": {"x": 282.36479340929543, "y": 160.38089132041563}}]');
+    const edges = JSON.parse('[{"data": {"id": "edge_lhaep1dk4d654tvxhl5", "source": "host_1", "target": "l2sw1"}}, {"data": {"id": "edge_lhaep2k8vhx64z7cubc", "source": "l2sw1", "target": "host_3"}}]');
+    var jobs = JSON.parse('[{"id": "5b4193eefc5e4bf5a0ec03d287f62b80", "level": 0, "job_id": 1, "host_id": "host_1", "arg_1": "10.0.0.2", "print_cmd": "ping -c 1 10.0.0.2"}]');
+    var packets = JSON.parse('[[{"data": {"id": "pkt_G09AFC4L", "label": "ARP-request", "type": "packet"}, "config": {"type": "ARP-request", "path": "edge_lhaep1dk4d654tvxhl5", "source": "host_1", "target": "l2sw1"}, "timestamp": "1683282739671808"}], [{"data": {"id": "pkt_MM7U6MQB", "label": "ARP-request", "type": "packet"}, "config": {"type": "ARP-request", "path": "edge_lhaep2k8vhx64z7cubc", "source": "l2sw1", "target": "host_3"}, "timestamp": "1683282739686887"}], [{"data": {"id": "pkt_D8TBGL1D", "label": "ARP-response", "type": "packet"}, "config": {"type": "ARP-response", "path": "edge_lhaep2k8vhx64z7cubc", "source": "host_3", "target": "l2sw1"}, "timestamp": "1683282739701950"}], [{"data": {"id": "pkt_D51CRKUA", "label": "ARP-response", "type": "packet"}, "config": {"type": "ARP-response", "path": "edge_lhaep1dk4d654tvxhl5", "source": "l2sw1", "target": "host_1"}, "timestamp": "1683282739717026"}], [{"data": {"id": "pkt_2X7HMBD9", "label": "ICMP echo-request\\n10.0.0.1 > 10.0.0.2", "type": "packet"}, "config": {"type": "ICMP echo-request\\n10.0.0.1 > 10.0.0.2", "path": "edge_lhaep1dk4d654tvxhl5", "source": "host_1", "target": "l2sw1"}, "timestamp": "1683282739732096"}], [{"data": {"id": "pkt_UPUQXZZW", "label": "ICMP echo-request\\n10.0.0.1 > 10.0.0.2", "type": "packet"}, "config": {"type": "ICMP echo-request\\n10.0.0.1 > 10.0.0.2", "path": "edge_lhaep2k8vhx64z7cubc", "source": "l2sw1", "target": "host_3"}, "timestamp": "1683282739747163"}], [{"data": {"id": "pkt_WSJOYE9F", "label": "ICMP echo-reply\\n10.0.0.2 > 10.0.0.1", "type": "packet"}, "config": {"type": "ICMP echo-reply\\n10.0.0.2 > 10.0.0.1", "path": "edge_lhaep2k8vhx64z7cubc", "source": "host_3", "target": "l2sw1"}, "timestamp": "1683282739762258"}], [{"data": {"id": "pkt_RI2K22SO", "label": "ICMP echo-reply\\n10.0.0.2 > 10.0.0.1", "type": "packet"}, "config": {"type": "ICMP echo-reply\\n10.0.0.2 > 10.0.0.1", "path": "edge_lhaep1dk4d654tvxhl5", "source": "l2sw1", "target": "host_1"}, "timestamp": "1683282739777312"}]]');
+    var ns = null;
+
+    PacketPlayer.getInstance().InitPlayer(packets);
+    global_cy = DrawIndexGraphStatic(nodes, edges, "index_network_example", graph_network_zoom, graph_network_pan_x, graph_network_pan_y);
+    PacketPlayer.getInstance().StartPlayer(global_cy);
+
+    document.getElementById("index_network_example").onclick = function(){
+        window.open('https://miminet.ru/web_network_shared?guid=d9012b77-fd52-48b0-b618-a3c3f55caf15', '_blank');
+    }
+
+</script>
+{% endblock %}
